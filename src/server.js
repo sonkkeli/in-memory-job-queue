@@ -4,6 +4,7 @@ const helpers = require('./utils/helpers');
 
 let nextAvailableId = 0;
 
+// I assumed that for in-memory it is enough to have it like this, not e.g. as real files in memory
 const queue = [];
 const inProgress = [];
 const handledQueue = [];
