@@ -42,7 +42,7 @@ const dequeueHandler = (_req, res) => {
   }
 };
 
-const concludeHandler = (req, res) => {
+const concludeOrCancelHandler = (req, res, newStatus) => {
   try {
     const jobId = req.params.id;
     if (!jobId) throw new Error(c.JOB_ERROR.INVALID_JOB_ID);
@@ -56,7 +56,7 @@ const concludeHandler = (req, res) => {
     if (id === -1) throw new Error(c.JOB_ERROR.NOT_FOUND);
 
     let tempStatus = job.Status;
-    job.Status = c.JOB_STATUS.CONCLUDED;
+    job.Status = newStatus;
     helpers.moveToHandledQ(
       tempStatus === c.JOB_STATUS.QUEUED ? queue : inProgress,
       handledQueue,
@@ -68,6 +68,14 @@ const concludeHandler = (req, res) => {
   } catch (error) {
     errorHandler.handle(error, res);
   }
+};
+
+const cancelHandler = (res, req) => {
+  concludeOrCancelHandler(res, req, c.JOB_STATUS.CANCELLED);
+};
+
+const concludeHandler = (res, req) => {
+  concludeOrCancelHandler(res, req, c.JOB_STATUS.CONCLUDED);
 };
 
 const getJobByIdHandler = (req, res) => {
@@ -95,6 +103,7 @@ const setupRoutes = (app) => {
   app.post('/jobs/enqueue', enqueueHandler);
   app.get('/jobs/dequeue', dequeueHandler);
   app.get('/jobs/:id/conclude', concludeHandler);
+  app.get('/jobs/:id/cancel', cancelHandler);
   app.get('/jobs/:id', getJobByIdHandler);
 };
 
