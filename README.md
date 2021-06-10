@@ -1,5 +1,9 @@
 # in-memory-job-queue
 
+## How to run the project ? 
+
+`npm i && npm run dev`       
+Server starts in localhost port 3001.
 
 The queue supports the following operations:
 
